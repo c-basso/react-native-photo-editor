@@ -90,9 +90,12 @@ class PhotoEditor: NSObject, ZLEditImageControllerDelegate {
         }
     }
     
-    
-    private func getUIImage (url: String ,completion:@escaping (UIImage) -> (), reject:@escaping(String)->()){
-        if let path = URL(string: url) {
+    private func getUIImage (
+        url: String,
+        completion:@escaping (UIImage) -> (),
+        reject:@escaping(String)->()
+    ){
+        if let path = URL(string: url), path.host != nil {
             SDWebImageManager.shared.loadImage(with: path, options: .continueInBackground, progress: { (recieved, expected, nil) in
             }, completed: { (downloadedImage, data, error, SDImageCacheType, true, imageUrlString) in
                 DispatchQueue.main.async {
@@ -106,8 +109,16 @@ class PhotoEditor: NSObject, ZLEditImageControllerDelegate {
                     }
                 }
             })
-        }else{
-            reject("false")
+        } else {
+            if FileManager.default.fileExists(atPath: url) {
+                DispatchQueue.main.async {
+                    let imageUrl = NSURL(string: url)
+                    let data = NSData(contentsOf: imageUrl! as URL)
+                    completion(UIImage(data: data! as Data)!)
+                }
+            } else {
+                reject("false")
+            }
         }
     }
     
