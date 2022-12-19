@@ -112,9 +112,15 @@ class PhotoEditor: NSObject, ZLEditImageControllerDelegate {
         } else {
             if FileManager.default.fileExists(atPath: url) {
                 DispatchQueue.main.async {
-                    let imageUrl = NSURL(string: url)
-                    let data = NSData(contentsOf: imageUrl! as URL)
-                    completion(UIImage(data: data! as Data)!)
+                    if let imageUrl = URL(string: url) {
+                        let data = try? Data(contentsOf: imageUrl)
+
+                        if let imageData = data {
+                            if let image = UIImage(data: imageData) {
+                                completion(image)
+                            }
+                        }
+                    }
                 }
             } else {
                 reject("false")
