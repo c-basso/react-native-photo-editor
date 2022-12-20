@@ -60,7 +60,35 @@ class PhotoEditor: NSObject, ZLEditImageControllerDelegate {
         //Config
         ZLImageEditorConfiguration.default().editDoneBtnBgColor = UIColor(red:255/255.0, green:238/255.0, blue:101/255.0, alpha:1.0)
 
-        ZLImageEditorConfiguration.default().editImageTools = [.draw, .clip, .filter, .imageSticker, .textSticker]
+        let tools = options["tools"] as? [String] ?? []
+        
+        var editImageTools: [ZLImageEditorConfiguration.EditImageTool] = [.draw, .clip, .filter, .imageSticker, .textSticker];
+        
+        if !tools.isEmpty {
+            editImageTools = [];
+            
+            if tools.contains("draw") {
+                editImageTools.append(.draw)
+            }
+            
+            if tools.contains("clip") {
+                editImageTools.append(.clip)
+            }
+            
+            if tools.contains("filter") {
+                editImageTools.append(.filter)
+            }
+            
+            if tools.contains("imageSticker") {
+                editImageTools.append(.imageSticker)
+            }
+            
+            if tools.contains("textSticker") {
+                editImageTools.append(.textSticker)
+            }
+        }
+        
+        ZLImageEditorConfiguration.default().editImageTools = editImageTools
         
         //Filters Lut
         do {
